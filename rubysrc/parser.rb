@@ -47,15 +47,13 @@ def _grab_my_node_ (xmldata, xmltags, tag)
     x_curr = x_curr.flatten
     xsize=x_curr.size/2 -1
 
-puts "+)(+" + xml_to_find.to_s + " + " + outer_idx.to_s + ":" + osize.to_s + " + " + x_curr.to_s + ":" + xsize.to_s
-return
-    xml_to_find.push = []
+    xml_to_find = []
     0.upto osize do |o|
       o1=outer_idx[o*2]
       o2=outer_idx[o*2 +1]
       0.upto xsize do |x|
-        x1=x_curr[o*2]
-        x2=x_curr[o*2 +1]
+        x1=x_curr[x*2]
+        x2=x_curr[x*2 +1]
         unless o1>x1 or o2<x2
           xml_to_find.push x1
           xml_to_find.push x2
@@ -64,17 +62,23 @@ return
     end
     xml_to_find = xml_to_find.flatten
 
-puts "+!+" + xml_to_find.to_s + " + " + outer_idx.to_s + ":" + osize.to_s + " + " + x_curr.to_s + ":" + xsize.to_s
   end
-puts xml_to_find
-return
-  xmltags[tag].each_key do |depth|
-      puts ">"+ xmltags[tag][depth].to_s
+
+  node_count = xml_to_find.size/2 -1
+  0.upto node_count do |ncount|
+      node_start = xml_to_find[ncount*2]
+      node_stop = xml_to_find[ncount*2 +1]
+      print xmldata[node_start][1]
+      (node_start+1).upto (node_stop-1) do |node_idx|
+        print "<" + xmldata[node_idx][0] + ">"
+        print xmldata[node_idx][1]
+      end
   end
   puts "|"*10
 end
 
 def xml_handler(xmldata, tag_to_find)
+  puts xmldata + "\n" + "~"*10
   xmlnodes = _splitter_ xmldata
   xmlobjects = _indexify_ xmlnodes
   puts _grab_my_node_(xmlnodes, xmlobjects, tag_to_find)
@@ -96,4 +100,8 @@ puts "+"*100
 xml_handler "<html> <head><title>top bar</title></head> <body> <div><span>axml-motor</span><span>work</span></div> <div><span>ruby</span></div>  </body> </html>", "span" if ARGV.length==0
 puts "+"*100
 xml_handler "<html> <head><title>top bar</title></head> <body> <div><span>axml-motor</span><span>work</span></div> <b><span>ruby</span></b>  </body> </html>", "div.span" if ARGV.length==0
+puts "+"*100
+xml_handler "<html> <head><title>top bar</title></head> <body> <div><span>axml-motor</span><span>work</span></div> <b><span>ruby</span></b>  </body> </html>", "div" if ARGV.length==0
+puts "+"*100
+xml_handler "<html> <head><title>top bar</title></head> <body> <div><span>axml-motor</span><span>work</span></div> <b><span>ruby</span></b>  </body> </html>", "body" if ARGV.length==0
 puts "+"*100
