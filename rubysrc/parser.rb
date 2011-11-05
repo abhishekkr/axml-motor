@@ -87,15 +87,15 @@ end
 # main class
 ##
 
-class XML_MOTOR
-  def _splitter_(xmldata)
+module XML_MOTOR_HANDLER
+  def self._splitter_(xmldata)
     @xmlnodes=[xmldata.split(/</)[0]]
     xmldata.split(/</)[1..-1].each do |x1|
       @xmlnodes.push  XML_CHOPPER.get_tag_attrib_value(x1)
     end
   end
 
-  def _indexify_
+  def self._indexify_
     @xmltags = {}
     idx = 1
     depth = 0
@@ -115,7 +115,7 @@ class XML_MOTOR
     end
   end
 
-  def _grab_my_node_ (tag)
+  def self._grab_my_node_ (tag)
     xml_to_find = XML_INDEX_HANDLER.get_node_indexes self, tag
     nodes = []
     node_count = xml_to_find.size/2 -1
@@ -134,18 +134,18 @@ class XML_MOTOR
     nodes
   end
 
-  def xml_handler(xmldata, tag_to_find)
+  def self.xml_handler(xmldata, tag_to_find)
     _splitter_ xmldata
     _indexify_
     my_nodes = _grab_my_node_ tag_to_find
     my_nodes
   end
 
-  def xmlnodes
+  def self.xmlnodes
     @xmlnodes
   end
 
-  def xmltags
+  def self.xmltags
     @xmltags
   end
 end
@@ -154,8 +154,8 @@ end
 # XML_MOTOR_EXECUTIONER ;)
 ##
 
-class XML_MOTOR_EXEC
-  def if_no_args(argv=[])
+module XML_MOTOR
+  def self.if_no_args(argv=[])
     if argv.size==0
       puts <<-eof
       XML_MOTOR got no OIL to run :)   
@@ -165,13 +165,13 @@ class XML_MOTOR_EXEC
         Usage:
          + Include the 'parser.rb'
          + To find values of an xml node from an xml file
-           XML_MOTOR_EXEC.new.get_node_from_file <file_with_path>, <node>
+           XML_MOTOR.get_node_from_file <file_with_path>, <node>
          + To find values of an xml node from an xml string
-           XML_MOTOR_EXEC.new.get_node_from_content <xml_string>, <node>
+           XML_MOTOR.get_node_from_content <xml_string>, <node>
         Example Calls As Code:
-         + XML_MOTOR_EXEC.new.get_node_from_content "<A>a</A><B><A>ba</A></B>", "A"
+         + XML_MOTOR.new.get_node_from_content "<A>a</A><B><A>ba</A></B>", "A"
              RETURNS: ["a", "ba"]
-         + XML_MOTOR_EXEC.new.get_node_from_content "<A>a</A><B><A>ba</A></B>", "B.A"
+         + XML_MOTOR.new.get_node_from_content "<A>a</A><B><A>ba</A></B>", "B.A"
              RETURNS: ["ba"]
 
       [Directly As a Tool] How To Use:
@@ -197,7 +197,7 @@ class XML_MOTOR_EXEC
     true
   end
 
-  def get_file_str_node(argv)
+  def self.get_file_str_node(argv)
     switch=nil
     file_str_node = {}
     argv.each do |args|
@@ -229,11 +229,11 @@ class XML_MOTOR_EXEC
     file_str_node
   end
 
-  def get_node_from_file(file, my_node)
+  def self.get_node_from_file(file, my_node)
     unless file.nil?
       if File.readable? file
         begin
-          return XML_MOTOR.new.xml_handler File.read, my_node
+          return XML_MOTOR_HANDLER.xml_handler File.read, my_node
         rescue
           puts "Error: problem parsing File Content"
         end
@@ -244,10 +244,10 @@ class XML_MOTOR_EXEC
     return ""
   end
 
-  def get_node_from_content(content, my_node)
+  def self.get_node_from_content(content, my_node)
     unless content.nil?
       begin
-        return XML_MOTOR.new.xml_handler content, my_node
+        return XML_MOTOR_HANDLER.xml_handler content, my_node
       rescue
         puts "Error problem parsing String Content #{content}"
       end
@@ -256,27 +256,3 @@ class XML_MOTOR_EXEC
   end
 end
 
-
-##
-# just a direct_execute method
-# UnComment METHOD CALL below for using it as a TOOL
-## 
-
-=begin
-def if_direct_exec
-  return unless XML_MOTOR_EXEC.new.if_no_args ARGV
-  file_str_node = XML_MOTOR_EXEC.new.get_file_str_node ARGV
-
-  return unless file_str_node
-
-  node_from_file = XML_MOTOR_EXEC.new.get_node_from_file file_str_node["file"], file_str_node["my_node"]
-  node_from_content = XML_MOTOR_EXEC.new.get_node_from_content file_str_node["content"], file_str_node["my_node"]
- 
-  my_node = []
-  my_node.push node_from_file unless node_from_file.empty?
-  my_node.push node_from_content unless node_from_content.empty?
-  puts my_node
-end
-
-if_direct_exec
-=end
