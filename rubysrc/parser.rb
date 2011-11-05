@@ -154,11 +154,26 @@ end
 # XML_MOTOR_EXECUTIONER ;)
 ##
 
-module XML_MOTOR_EXEC
-  def self.if_no_args(argv=[])
+class XML_MOTOR_EXEC
+  def if_no_args(argv=[])
     if argv.size==0
       puts <<-eof
+      XML_MOTOR got no OIL to run :)   
+
       No Arguments Provided.
+      [As A Code Library] How To Use:
+        Usage:
+         + Include the 'parser.rb'
+         + To find values of an xml node from an xml file
+           XML_MOTOR_EXEC.new.get_node_from_file <file_with_path>, <node>
+         + To find values of an xml node from an xml string
+           XML_MOTOR_EXEC.new.get_node_from_content <xml_string>, <node>
+        Example Calls As Code:
+         + XML_MOTOR_EXEC.new.get_node_from_content "<A>a</A><B><A>ba</A></B>", "A"
+             RETURNS: ["a", "ba"]
+         + XML_MOTOR_EXEC.new.get_node_from_content "<A>a</A><B><A>ba</A></B>", "B.A"
+             RETURNS: ["ba"]
+
       [Directly As a Tool] How To Use:
         Syntax:
          + To find values of an xml node from an xml file
@@ -167,13 +182,22 @@ module XML_MOTOR_EXEC
            $ parser.rb -s <xml_string> -n <node_to_find>
          + To find values of an xml node from an xml file & string, both
            $ parser.rb -f <xml_file> -s <xml_string> -n <node_to_find>
+        Example Run As Tool:
+           $ ruby run_as_tool.rb -n "A" -s "<A>a</A><B><A>ba</A></B>"
+             DISPLAYS:
+             a
+             ba
+           $ ruby run_as_tool.rb -n "B.A" -s "<A>a</A><B><A>ba</A></B>"
+             DISPLAYS:
+             ba
+
       eof
       return false
     end
     true
   end
 
-  def self.get_file_str_node(argv)
+  def get_file_str_node(argv)
     switch=nil
     file_str_node = {}
     argv.each do |args|
@@ -205,7 +229,7 @@ module XML_MOTOR_EXEC
     file_str_node
   end
 
-  def self.get_node_from_file(file, my_node)
+  def get_node_from_file(file, my_node)
     unless file.nil?
       if File.readable? file
         begin
@@ -220,7 +244,7 @@ module XML_MOTOR_EXEC
     return ""
   end
 
-  def self.get_node_from_content(content, my_node)
+  def get_node_from_content(content, my_node)
     unless content.nil?
       begin
         return XML_MOTOR.new.xml_handler content, my_node
@@ -235,16 +259,18 @@ end
 
 ##
 # just a direct_execute method
+# UnComment METHOD CALL below for using it as a TOOL
 ## 
 
+=begin
 def if_direct_exec
-  return unless XML_MOTOR_EXEC.if_no_args ARGV
-  file_str_node = XML_MOTOR_EXEC.get_file_str_node ARGV
+  return unless XML_MOTOR_EXEC.new.if_no_args ARGV
+  file_str_node = XML_MOTOR_EXEC.new.get_file_str_node ARGV
 
   return unless file_str_node
 
-  node_from_file = XML_MOTOR_EXEC.get_node_from_file file_str_node["file"], file_str_node["my_node"]
-  node_from_content = XML_MOTOR_EXEC.get_node_from_content file_str_node["content"], file_str_node["my_node"]
+  node_from_file = XML_MOTOR_EXEC.new.get_node_from_file file_str_node["file"], file_str_node["my_node"]
+  node_from_content = XML_MOTOR_EXEC.new.get_node_from_content file_str_node["content"], file_str_node["my_node"]
  
   my_node = []
   my_node.push node_from_file unless node_from_file.empty?
@@ -253,3 +279,4 @@ def if_direct_exec
 end
 
 if_direct_exec
+=end
