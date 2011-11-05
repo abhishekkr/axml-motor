@@ -242,7 +242,7 @@ module XML_MOTOR
     unless file.nil?
       if File.readable? file
         begin
-          return XML_MOTOR_HANDLER.xml_handler File.read, my_node
+          return XML_MOTOR_HANDLER.xml_handler File.read(file), my_node
         rescue
           puts "Error: problem parsing File Content"
         end
