@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-module XML_INDEX_HANDLER
+module XMLIndexHandler
   def self.get_node_indexes(xml_motor, tag)
     xml_idx_to_find = []
     xml_motor.xmltags[tag.split(".")[0]].each_value do |v|
@@ -41,7 +41,7 @@ module XML_INDEX_HANDLER
   end
 end
 
-module XML_CHOPPER
+module XMLChopper
   def self.get_tag_attrib_value(tag_value)
     tag_value_split = tag_value.split(/>/)
     in_tag = tag_value_split.first
@@ -72,7 +72,7 @@ module XML_CHOPPER
   end
 end
 
-module XML_JOINER
+module XMLJoiner
   def self.dejavu_attributes(attrib_hash)
     return nil if attrib_hash.nil?
     attributes=""
@@ -87,11 +87,11 @@ end
 # main class
 ##
 
-module XML_MOTOR_HANDLER
+module XMLMotorHandler
   def self._splitter_(xmldata)
     @xmlnodes=[xmldata.split(/</)[0]]
     xmldata.split(/</)[1..-1].each do |x1|
-      @xmlnodes.push  XML_CHOPPER.get_tag_attrib_value(x1)
+      @xmlnodes.push  XMLChopper.get_tag_attrib_value(x1)
     end
   end
 
@@ -116,7 +116,7 @@ module XML_MOTOR_HANDLER
   end
 
   def self._grab_my_node_ (tag)
-    xml_to_find = XML_INDEX_HANDLER.get_node_indexes self, tag
+    xml_to_find = XMLIndexHandler.get_node_indexes self, tag
     nodes = []
     node_count = xml_to_find.size/2 -1
     0.upto node_count do |ncount|
@@ -126,7 +126,7 @@ module XML_MOTOR_HANDLER
       nodes[ncount] += @xmlnodes[node_start][1] unless @xmlnodes[node_start][1].nil?
       (node_start+1).upto (node_stop-1) do |node_idx|
         any_attrib ||= ""
-        any_attrib =  XML_JOINER.dejavu_attributes(@xmlnodes[node_idx][0][1]).to_s unless @xmlnodes[node_idx][0][1].nil?
+        any_attrib =  XMLJoiner.dejavu_attributes(@xmlnodes[node_idx][0][1]).to_s unless @xmlnodes[node_idx][0][1].nil?
         nodes[ncount] += "<" + @xmlnodes[node_idx][0][0] + any_attrib + ">"
         nodes[ncount] += @xmlnodes[node_idx][1] unless @xmlnodes[node_idx][1].nil?
       end
@@ -151,14 +151,14 @@ module XML_MOTOR_HANDLER
 end
 
 ##
-# XML_MOTOR_EXECUTIONER ;)
+# XMLMotor_EXECUTIONER ;)
 ##
 
-module XML_MOTOR
+module XMLMotor
   def self.if_no_args(argv=[])
     if argv.size==0
       puts <<-eof
-      XML_MOTOR got no OIL to run :)   
+      XMLMotor got no OIL to run :)   
 
       No Arguments Provided.
 
@@ -173,14 +173,14 @@ module XML_MOTOR
 
         Usage:
          + To find values of an xml node from an xml file
-           XML_MOTOR.get_node_from_file <file_with_path>, <node>
+           XMLMotor.get_node_from_file <file_with_path>, <node>
          + To find values of an xml node from an xml string
-           XML_MOTOR.get_node_from_content <xml_string>, <node>
+           XMLMotor.get_node_from_content <xml_string>, <node>
 
         Example Calls As Code:
-         + XML_MOTOR.new.get_node_from_content "<A>a</A><B><A>ba</A></B>", "A"
+         + XMLMotor.new.get_node_from_content "<A>a</A><B><A>ba</A></B>", "A"
              RETURNS: ["a", "ba"]
-         + XML_MOTOR.new.get_node_from_content "<A>a</A><B><A>ba</A></B>", "B.A"
+         + XMLMotor.new.get_node_from_content "<A>a</A><B><A>ba</A></B>", "B.A"
              RETURNS: ["ba"]
 
       [Directly As a Tool] How To Use:
@@ -242,7 +242,7 @@ module XML_MOTOR
     unless file.nil?
       if File.readable? file
         begin
-          return XML_MOTOR_HANDLER.xml_handler File.read(file), my_node
+          return XMLMotorHandler.xml_handler File.read(file), my_node
         rescue
           puts "Error: problem parsing File Content"
         end
@@ -256,7 +256,7 @@ module XML_MOTOR
   def self.get_node_from_content(content, my_node)
     unless content.nil?
       begin
-        return XML_MOTOR_HANDLER.xml_handler content, my_node
+        return XMLMotorHandler.xml_handler content, my_node
       rescue
         puts "Error problem parsing String Content #{content}"
       end
