@@ -135,12 +135,10 @@ class XML_MOTOR
   end
 
   def xml_handler(xmldata, tag_to_find)
-    puts "~"*10,xmldata,"~"*10,tag_to_find,"~"*10
     _splitter_ xmldata
     _indexify_
     my_nodes = _grab_my_node_ tag_to_find
-    p my_nodes
-    return
+    my_nodes
   end
 
   def xmlnodes
@@ -152,12 +150,106 @@ class XML_MOTOR
   end
 end
 
-ARGV.each do |args|
-  content = "<numbers><even>2,4,6,8,10</even><odd>1,3,5,7,9</odd></numbers>"
-  begin
-    content = File.read(args)
-  rescue
-    p args + " can't be read... using deafult content here"
+##
+# XML_MOTOR_EXECUTIONER ;)
+##
+
+module XML_MOTOR_EXEC
+  def self.if_no_args(argv=[])
+    if argv.size==0
+      puts <<-eof
+      No Arguments Provided.
+      [Directly As a Tool] How To Use:
+        Syntax:
+         + To find values of an xml node from an xml file
+           $ parser.rb -f <xml_file> -n <node_to_find>
+         + To find values of an xml node from an xml string
+           $ parser.rb -s <xml_string> -n <node_to_find>
+         + To find values of an xml node from an xml file & string, both
+           $ parser.rb -f <xml_file> -s <xml_string> -n <node_to_find>
+      eof
+      return false
+    end
+    true
   end
-  xml_handler content
+
+  def self.get_file_str_node(argv)
+    switch=nil
+    file_str_node = {}
+    argv.each do |args|
+      if ["-f","-s","-n"].include?(switch) and ["-f","-s","-n"].include?(args)
+        puts "You provided an empty switch #{switch}, still trying to execute with rest of information provided."
+        switch = args
+        next
+      end
+
+      case switch
+        when "-f"
+          file_str_node["file"] = args
+        when "-s"
+          file_str_node["content"] = args
+        when "-n"
+          file_str_node["my_node"] = args
+      end
+      switch = args
+    end
+
+    if file_str_node["file"].nil? and file_str_node["content"].nil?
+      puts "No xml string or file provided. Provide it with '-s|-f' switch.\n" 
+      return if_no_args
+    elsif file_str_node["my_node"].nil?
+      puts "No node provided to search. Provide it with '-n' switch." 
+      return if_no_args
+    end
+
+    file_str_node
+  end
+
+  def self.get_node_from_file(file, my_node)
+    unless file.nil?
+      if File.readable? file
+        begin
+          return XML_MOTOR.new.xml_handler File.read, my_node
+        rescue
+          puts "Error: problem parsing File Content"
+        end
+      else
+        puts "Error: #{file} is not readable."
+      end
+    end
+    return ""
+  end
+
+  def self.get_node_from_content(content, my_node)
+    unless content.nil?
+      begin
+        return XML_MOTOR.new.xml_handler content, my_node
+      rescue
+        puts "Error problem parsing String Content #{content}"
+      end
+    end
+    return ""
+  end
 end
+
+
+##
+# just a direct_execute method
+## 
+
+def if_direct_exec
+  return unless XML_MOTOR_EXEC.if_no_args ARGV
+  file_str_node = XML_MOTOR_EXEC.get_file_str_node ARGV
+
+  return unless file_str_node
+
+  node_from_file = XML_MOTOR_EXEC.get_node_from_file file_str_node["file"], file_str_node["my_node"]
+  node_from_content = XML_MOTOR_EXEC.get_node_from_content file_str_node["content"], file_str_node["my_node"]
+ 
+  my_node = []
+  my_node.push node_from_file unless node_from_file.empty?
+  my_node.push node_from_content unless node_from_content.empty?
+  puts my_node
+end
+
+if_direct_exec
