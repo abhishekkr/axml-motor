@@ -161,13 +161,22 @@ module XML_MOTOR
       XML_MOTOR got no OIL to run :)   
 
       No Arguments Provided.
+
+      [As A Ruby Gem] How To Use:
+        Loading:
+         + $ gem install xml-motor
+         + 'require' the 'xml-motor'
+
       [As A Code Library] How To Use:
+        Loading:
+         + 'require' the 'parser.rb'
+
         Usage:
-         + Include the 'parser.rb'
          + To find values of an xml node from an xml file
            XML_MOTOR.get_node_from_file <file_with_path>, <node>
          + To find values of an xml node from an xml string
            XML_MOTOR.get_node_from_content <xml_string>, <node>
+
         Example Calls As Code:
          + XML_MOTOR.new.get_node_from_content "<A>a</A><B><A>ba</A></B>", "A"
              RETURNS: ["a", "ba"]
@@ -177,11 +186,11 @@ module XML_MOTOR
       [Directly As a Tool] How To Use:
         Syntax:
          + To find values of an xml node from an xml file
-           $ parser.rb -f <xml_file> -n <node_to_find>
+           $ ruby run_as_tool.rb -f <xml_file> -n <node_to_find>
          + To find values of an xml node from an xml string
-           $ parser.rb -s <xml_string> -n <node_to_find>
+           $ ruby run_as_tool.rb -s <xml_string> -n <node_to_find>
          + To find values of an xml node from an xml file & string, both
-           $ parser.rb -f <xml_file> -s <xml_string> -n <node_to_find>
+           $ ruby run_as_tool.rb -f <xml_file> -s <xml_string> -n <node_to_find>
         Example Run As Tool:
            $ ruby run_as_tool.rb -n "A" -s "<A>a</A><B><A>ba</A></B>"
              DISPLAYS:
