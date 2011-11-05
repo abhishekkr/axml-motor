@@ -41,11 +41,57 @@ module XML_INDEX_HANDLER
   end
 end
 
+module XML_CHOPPER
+  def self.get_tag_attrib_value(tag_value)
+    tag_value_split = tag_value.split(/>/)
+    in_tag = tag_value_split.first
+    out_tag = tag_value_split[1..-1].join
+    in_tag_split = in_tag.split(/[ \t]/)
+    tag_name = in_tag_split.first
+    attribzone = in_tag_split[1..-1].flatten.join(' ')
+    attrs = get_attribute_hash attribzone
+    [[tag_name,attrs],out_tag]
+  end
+
+  def self.get_attribute_hash(attribzone)
+    attribzone = attribzone.strip unless attribzone.nil?
+    return nil if attribzone.nil? or attribzone==""
+    attrs = {}
+    broken_attrib = attribzone.split(/=/)
+    attribs = broken_attrib.first.strip
+    values = nil
+    broken_attrib[1..-2].each do |attrib_part|
+      value_n_attrib = attrib_part.split(/[ \t]/)
+      values = value_n_attrib[0..-2].join(' ')
+      attrs[attribs] = values
+      attribs = value_n_attrib[-1].strip
+    end
+    values = broken_attrib.last.strip
+    attrs[attribs] = values
+    attrs
+  end
+end
+
+module XML_JOINER
+  def self.dejavu_attributes(attrib_hash)
+    return nil if attrib_hash.nil?
+    attributes=""
+    attrib_hash.each_key do |hash_key|
+      attributes += " " + hash_key + "=" + attrib_hash[hash_key]
+    end
+    attributes
+  end
+end
+
+##
+# main class
+##
+
 class XML_MOTOR
   def _splitter_(xmldata)
     @xmlnodes=[xmldata.split(/</)[0]]
     xmldata.split(/</)[1..-1].each do |x1|
-      @xmlnodes.push x1.split(/>/)
+      @xmlnodes.push  XML_CHOPPER.get_tag_attrib_value(x1)
     end
   end
 
@@ -54,17 +100,18 @@ class XML_MOTOR
     idx = 1
     depth = 0
     @xmlnodes[1..-1].each do |xnode|
-        unless xnode[0].match(/^\/.*/) then
-            @xmltags[xnode[0]] ||= {}
-            @xmltags[xnode[0]][depth] ||= []
-            @xmltags[xnode[0]][depth].push idx
-            depth += 1
-        else
-            depth -= 1
-            @xmltags[xnode[0][1..-1]][depth] ||= []
-            @xmltags[xnode[0][1..-1]][depth].push idx
-        end
-        idx +=1
+      tag_name = xnode[0][0]
+      unless tag_name.match(/^\/.*/) then
+        @xmltags[tag_name] ||= {}
+        @xmltags[tag_name][depth] ||= []
+        @xmltags[tag_name][depth].push idx
+        depth += 1
+      else
+        depth -= 1
+        @xmltags[tag_name[1..-1]][depth] ||= []
+        @xmltags[tag_name[1..-1]][depth].push idx
+      end
+      idx +=1
     end
   end
 
@@ -73,14 +120,16 @@ class XML_MOTOR
     nodes = []
     node_count = xml_to_find.size/2 -1
     0.upto node_count do |ncount|
-            nodes[ncount] = ""
-            node_start = xml_to_find[ncount*2]
-            node_stop = xml_to_find[ncount*2 +1]
-            nodes[ncount] += @xmlnodes[node_start][1] unless @xmlnodes[node_start][1].nil?
-            (node_start+1).upto (node_stop-1) do |node_idx|
-                nodes[ncount] += "<" + @xmlnodes[node_idx][0] + ">"
-                nodes[ncount] += @xmlnodes[node_idx][1] unless @xmlnodes[node_idx][1].nil?
-            end
+      nodes[ncount] = ""
+      node_start = xml_to_find[ncount*2]
+      node_stop = xml_to_find[ncount*2 +1]
+      nodes[ncount] += @xmlnodes[node_start][1] unless @xmlnodes[node_start][1].nil?
+      (node_start+1).upto (node_stop-1) do |node_idx|
+        any_attrib ||= ""
+        any_attrib =  XML_JOINER.dejavu_attributes(@xmlnodes[node_idx][0][1]).to_s unless @xmlnodes[node_idx][0][1].nil?
+        nodes[ncount] += "<" + @xmlnodes[node_idx][0][0] + any_attrib + ">"
+        nodes[ncount] += @xmlnodes[node_idx][1] unless @xmlnodes[node_idx][1].nil?
+      end
     end
     nodes
   end
@@ -104,26 +153,11 @@ class XML_MOTOR
 end
 
 ARGV.each do |args|
-    content = "HTML Eg <html> <head> <title>top bar </title></head><body> here is<h1>BODY</h1></body> </html>"
-    begin
-        content = File.read(args)
-    rescue
-        p args + " can't be read... using deafult content here"
-    end
-    xml_handler content
+  content = "<numbers><even>2,4,6,8,10</even><odd>1,3,5,7,9</odd></numbers>"
+  begin
+    content = File.read(args)
+  rescue
+    p args + " can't be read... using deafult content here"
+  end
+  xml_handler content
 end
-
-#xml_handler "<html> <head> <title> top bar </title> </head> <body> here is <h1>BODY</h1> a tag to <h1>work</h1> with.</body> </html>" if ARGV.length==0
-puts "+"*100
-XML_MOTOR.new.xml_handler "<html> <head><title>top bar</title></head> <body> <div><b>a</b><span>axml-motor</span><span>work</span></div> <div><span>ruby</span></div>   <div><span>again</span></div>  </body> </html>", "span" if ARGV.length==0
-puts "","+"*100
-XML_MOTOR.new.xml_handler "<html> <head><title>top bar</title></head> <body> <div><b>a</b><span>axml-motor</span><span>work</span></div> <b><span>ruby</span></b> <div><span>again</span></div>  </body> </html>", "div.span" if ARGV.length==0
-puts "","+"*100
-XML_MOTOR.new.xml_handler "<html> <head><title>top bar</title></head> <body> <div><b>a</b><span>axml-motor</span><span>work</span></div> <b><span>ruby</span></b>  <div><span>again</span></div>  </body> </html>", "div" if ARGV.length==0
-puts "","+"*100
-XML_MOTOR.new.xml_handler "<html> <head><title>top bar</title></head> <body> <div><b>a</b><span>axml-motor</span><span>work</span></div> <b><span>ruby</span></b>  <div><span>again</span></div>   </body> </html>", "body" if ARGV.length==0
-puts "","+"*100
-XML_MOTOR.new.xml_handler "<html> <head><title>top bar</title></head> <body> <div><b>a</b><span>axml-motor</span><span>work</span></div> <b><span>ruby</span></b> <div><span>again</span></div>   </body> </html>", "div.span" if ARGV.length==0
-puts "","+"*100
-XML_MOTOR.new.xml_handler "<html> <head><title>top bar</title></head> <body> <div><b>a</b><span>axml-motor</span><span>work</span></div> <b><span>ruby</span></b> <div><span>again</span></div>   </body> </html>", "b" if ARGV.length==0
-puts "","+"*100
