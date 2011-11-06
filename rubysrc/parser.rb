@@ -115,14 +115,20 @@ module XMLMotorHandler
     end
   end
 
-  def self._grab_my_node_ (tag)
-    xml_to_find = XMLIndexHandler.get_node_indexes self, tag
+  def self._grab_my_node_ (xml_to_find, attrib_to_find=nil)
+    unless attrib_to_find.nil?
+      attrib_key = attrib_to_find.split(/=/)[0].strip
+      attrib_val = attrib_to_find.split(/=/)[1..-1].join.strip
+    end
     nodes = []
     node_count = xml_to_find.size/2 -1
     0.upto node_count do |ncount|
-      nodes[ncount] = ""
       node_start = xml_to_find[ncount*2]
       node_stop = xml_to_find[ncount*2 +1]
+      unless attrib_to_find.nil? or @xmlnodes[node_start][0][1].nil?
+        next unless @xmlnodes[node_start][0][1][attrib_key] == attrib_val
+      end
+      nodes[ncount] ||= ""
       nodes[ncount] += @xmlnodes[node_start][1] unless @xmlnodes[node_start][1].nil?
       (node_start+1).upto (node_stop-1) do |node_idx|
         any_attrib ||= ""
@@ -131,13 +137,22 @@ module XMLMotorHandler
         nodes[ncount] += @xmlnodes[node_idx][1] unless @xmlnodes[node_idx][1].nil?
       end
     end
+    nodes.delete(nil) unless attrib_to_find.nil?
     nodes
   end
 
-  def self.xml_handler(xmldata, tag_to_find)
+  def self.xml_handler(xmldata, tag_to_find=nil, attrib_to_find=nil)
     _splitter_ xmldata
     _indexify_
-    my_nodes = _grab_my_node_ tag_to_find
+    my_nodes = nil
+    if attrib_to_find.nil?
+      xml_to_find = XMLIndexHandler.get_node_indexes self, tag_to_find
+      my_nodes = _grab_my_node_ xml_to_find
+    elsif tag_to_find.nil? 
+    elsif !attrib_to_find.nil? and !tag_to_find.nil?
+      xml_to_find = XMLIndexHandler.get_node_indexes self, tag_to_find
+      my_nodes = _grab_my_node_ xml_to_find, attrib_to_find
+    end
     my_nodes
   end
 
@@ -176,12 +191,16 @@ module XMLMotor
            XMLMotor.get_node_from_file <file_with_path>, <node>
          + To find values of an xml node from an xml string
            XMLMotor.get_node_from_content <xml_string>, <node>
+         + To find values of an xml node using tag_names with required attribute
+           XMLMotor.get_node_from_content <xml_string>, <node>, "<attrib_key=attrib_value>"
 
         Example Calls As Code:
          + XMLMotor.new.get_node_from_content "<A>a</A><B><A>ba</A></B>", "A"
              RETURNS: ["a", "ba"]
          + XMLMotor.new.get_node_from_content "<A>a</A><B><A>ba</A></B>", "B.A"
              RETURNS: ["ba"]
+         + XMLMotor.new.get_node_from_content "<A i='1'>a</A><B><A i='2'>ba</A></B>", "A", "i='1'"
+             RETURNS: ["a"]
 
       [Directly As a Tool] How To Use:
         Syntax:
@@ -238,11 +257,11 @@ module XMLMotor
     file_str_node
   end
 
-  def self.get_node_from_file(file, my_node)
+  def self.get_node_from_file(file, my_tag=nil, my_attrib=nil)
     unless file.nil?
       if File.readable? file
         begin
-          return XMLMotorHandler.xml_handler File.read(file), my_node
+          return XMLMotorHandler.xml_handler File.read(file), my_tag, my_attrib
         rescue
           puts "Error: problem parsing File Content"
         end
@@ -253,10 +272,10 @@ module XMLMotor
     return ""
   end
 
-  def self.get_node_from_content(content, my_node)
+  def self.get_node_from_content(content, my_tag=nil, my_attrib=nil)
     unless content.nil?
       begin
-        return XMLMotorHandler.xml_handler content, my_node
+        return XMLMotorHandler.xml_handler content, my_tag, my_attrib
       rescue
         puts "Error problem parsing String Content #{content}"
       end

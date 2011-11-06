@@ -23,15 +23,17 @@ def if_direct_exec
   true
 end
 
-if ARGV[0].match("-eg")
-  puts "+"*100
-  puts "XML: 'XML <div>parsing <span>is</span> revived</div> now. ~=ABK=~'", "NODE: span"
-  puts XMLMotor.get_node_from_content "XML <div>parsing <span>is</span> revived</div> now. ~=ABK=~", "span"
-  puts "+"*100
-  puts "XML: 'XML <div>parsing <span>is</span> revived</div> now. ~=ABK=~'", "NODE: div"
-  puts XMLMotor.get_node_from_content "XML <div>parsing <span>is</span> revived</div> now. ~=ABK=~", "div" 
-  puts "+"*100
-  exit 0
+unless ARGV.empty?
+  if ARGV[0].match("-eg")
+    puts "+"*100
+    puts "XML: 'XML <div>parsing <span>is</span> revived</div> now. ~=ABK=~'", "NODE: span"
+    puts XMLMotor.get_node_from_content "XML <div>parsing <span>is</span> revived</div> now. ~=ABK=~", "span"
+    puts "+"*100
+    puts "XML: 'XML <div>parsing <span>is</span> revived</div> now. ~=ABK=~'", "NODE: div"
+    puts XMLMotor.get_node_from_content "XML <div>parsing <span>is</span> revived</div> now. ~=ABK=~", "div" 
+    puts "+"*100
+    exit 0
+  end
 end
 
 unless if_direct_exec
@@ -39,5 +41,6 @@ unless if_direct_exec
        
        Could run in Example Mode, if have nothing in mind.....
          $ ruby run_as_tool.rb -eg
+       
         noArgs
 end
