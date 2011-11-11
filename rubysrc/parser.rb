@@ -3,18 +3,14 @@
 module XMLIndexHandler
   def self.get_node_indexes(xml_motor, tag)
     xml_idx_to_find = []
-    xml_motor.xmltags[tag.split(".")[0]].each_value do |v|
-        xml_idx_to_find.push v
-    end
+    xml_motor.xmltags[tag.split(".")[0]].each_value {|val|  xml_idx_to_find.push val }
     xml_idx_to_find = xml_idx_to_find.flatten
 
     tag.split(".")[1..-1].each do |tag_i|
       outer_idx = xml_idx_to_find
       osize=outer_idx.size/2 -1
       x_curr=[]
-      xml_motor.xmltags[tag_i].each_value do |v|
-         x_curr.push v
-      end
+      xml_motor.xmltags[tag_i].each_value {|val|  x_curr.push val }
       x_curr = x_curr.flatten
       xsize=x_curr.size/2 -1
 
@@ -85,9 +81,8 @@ end
 
 ##
 # main class
-##
 
-module XMLMotorHandler
+module XMLMotorEngine
   def self._splitter_(xmldata)
     @xmlnodes=[xmldata.split(/</)[0]]
     xmldata.split(/</)[1..-1].each do |x1|
@@ -95,7 +90,8 @@ module XMLMotorHandler
     end
   end
 
-  def self._indexify_
+  def self._indexify_(_nodes=nil)
+    xmlnodes _nodes unless _nodes.nil?
     @xmltags = {}
     idx = 1
     depth = 0
@@ -141,57 +137,70 @@ module XMLMotorHandler
     nodes
   end
 
-  def self.xml_handler(xmldata, tag_to_find=nil, attrib_to_find=nil)
-    _splitter_ xmldata
-    _indexify_
+  def self.xml_extracter(tag_to_find=nil, attrib_to_find=nil)
     my_nodes = nil
     if attrib_to_find.nil?
       xml_to_find = XMLIndexHandler.get_node_indexes self, tag_to_find
       my_nodes = _grab_my_node_ xml_to_find
     elsif tag_to_find.nil? 
+      #
+      #just attrib-based search to come
+      #
     elsif !attrib_to_find.nil? and !tag_to_find.nil?
       xml_to_find = XMLIndexHandler.get_node_indexes self, tag_to_find
       my_nodes = _grab_my_node_ xml_to_find, attrib_to_find
     end
     my_nodes
+  end  
+
+  def self.xml_miner(xmldata, tag_to_find=nil, attrib_to_find=nil)
+    _splitter_ xmldata
+    _indexify_
+    xml_extracter tag_to_find, attrib_to_find
+  end 
+
+  def self.xmlnodes(xmlnodes=nil)
+    @xmlnodes ||= xmlnodes
   end
 
-  def self.xmlnodes
-    @xmlnodes
+  def self.xmltags(xmltags=nil)
+    @xmltags ||= xmltags
   end
 
-  def self.xmltags
-    @xmltags
+  def self.pre_processed_content(_nodes, _tags=nil, tag_to_find=nil, attrib_to_find=nil)
+    begin
+      xmlnodes _nodes
+      unless _tags.nil?
+        xmltags _tags
+      else
+        _indexify_ _nodes
+      end
+      return xml_extracter tag_to_find, attrib_to_find
+    rescue
+      puts "Error problem parsing processed XML Nodes."
+    end
+    return ""
   end
 end
 
 ##
 # XMLMotor_EXECUTIONER ;)
-##
 
 module XMLMotor
   def self.get_node_from_file(file, my_tag=nil, my_attrib=nil)
-    unless file.nil?
-      if File.readable? file
-        begin
-          return XMLMotorHandler.xml_handler File.read(file), my_tag, my_attrib
-        rescue
-          puts "Error: problem parsing File Content"
-        end
-      else
-        puts "Error: #{file} is not readable."
-      end
+    begin
+      return get_node_from_content(File.read(file.to_s), my_tag, my_attrib) unless File.readable? file.to_s
+    rescue
+      puts "Error: #{file} is not readable."
     end
     return ""
   end
 
   def self.get_node_from_content(content, my_tag=nil, my_attrib=nil)
-    unless content.nil?
-      begin
-        return XMLMotorHandler.xml_handler content, my_tag, my_attrib
-      rescue
-        puts "Error problem parsing String Content #{content}"
-      end
+    begin
+      return XMLMotorEngine.xml_miner content, my_tag, my_attrib unless content.nil?
+    rescue
+      puts "Error problem parsing String Content #{content}"
     end
     return ""
   end

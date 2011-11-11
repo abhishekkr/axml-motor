@@ -25,12 +25,17 @@ module XMLMotorAsTool
          + 'require' the 'parser.rb'
 
         Usage:
-         + To find values of an xml node from an xml file
-           XMLMotor.get_node_from_file <file_with_path>, <node>
-         + To find values of an xml node from an xml string
-           XMLMotor.get_node_from_content <xml_string>, <node>
-         + To find values of an xml node using tag_names with required attribute
-           XMLMotor.get_node_from_content <xml_string>, <node>, "<attrib_key=attrib_value>"
+           [[ To Search Just One QUERY ]]
+             nodes_array = XMLMotor.get_node_from_file "_XML_FILE_"
+             nodes_array = XMLMotor.get_node_from_file "_XML_FILE_", "ATTRIB_KEY=ATTRIB_VALUE"
+             nodes_array = XMLMotor.get_node_from_content "_XML_DATA_"
+             nodes_array = XMLMotor.get_node_from_content "_XML_DATA_", "ATTRIB_KEY=ATTRIB_VALUE"
+           [[ To Search More Than One QUERIES ]]
+             str = {XML_DATA}
+             nodes_ = XMLMotorEngine._splitter_ str
+             tags_ = XMLMotorEngine._indexify_ nodes_
+             nodes_array = XMLMotorEngine.pre_processed_content nodes_, tags_, "_TAG_"
+             nodes_array = XMLMotorEngine.pre_processed_content nodes_, tags_, "_TAG_", "ATTRIB_KEY=ATTRIB_VALUE"
 
         Example Calls As Code:
          + XMLMotor.new.get_node_from_content "<A>a</A><B><A>ba</A></B>", "A"
