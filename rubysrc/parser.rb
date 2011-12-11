@@ -121,7 +121,8 @@ module XMLMotorEngine
     0.upto node_count do |ncount|
       node_start = xml_to_find[ncount*2]
       node_stop = xml_to_find[ncount*2 +1]
-      unless attrib_to_find.nil? or @xmlnodes[node_start][0][1].nil?
+      unless attrib_to_find.nil?
+	next if @xmlnodes[node_start][0][1].nil?
         next unless @xmlnodes[node_start][0][1][attrib_key] == attrib_val
       end
       nodes[ncount] ||= ""
