@@ -190,7 +190,7 @@ end
 module XMLMotor
   def self.get_node_from_file(file, my_tag=nil, my_attrib=nil)
     begin
-      return get_node_from_content(File.read(file.to_s), my_tag, my_attrib) unless File.readable? file.to_s
+      return get_node_from_content(File.read(file.to_s), my_tag, my_attrib) if File.readable? file.to_s
     rescue
       puts "Error: #{file} is not readable."
     end
