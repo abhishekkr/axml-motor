@@ -97,6 +97,7 @@ module XMLMotorEngine
     xmldata.split(/</)[1..-1].each do |x1|
       @xmlnodes.push  XMLChopper.get_tag_attrib_value(x1)
     end
+    @xmlnodes
   end
 
   def self._indexify_(_nodes=nil)
@@ -118,6 +119,7 @@ module XMLMotorEngine
       end
       idx +=1
     end
+    @xmltags
   end
 
   def self._grab_my_node_ (xml_to_find, attrib_to_find=nil)
