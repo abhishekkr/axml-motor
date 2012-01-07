@@ -7,7 +7,7 @@ class TestXMLMotorEngine < Test::Unit::TestCase
   def setup
     @content = <<-xmldata
 	<dummy>
-	 <mmy> <y id='3'> <z>300</z> </y> <y>5</y> </mmy>
+	 <mmy> <y id='3'\nclass="three"> <z>300</z> </y> <y>5</y> </mmy>
 	</dummy>
        xmldata
   end
@@ -22,7 +22,7 @@ class TestXMLMotorEngine < Test::Unit::TestCase
 
     assert_equal xml_nodes[1][0], ["dummy", nil]
     assert_equal xml_nodes[2][0], ["mmy", nil]
-    assert_equal xml_nodes[3][0], ["y", {"id"=>"'3'"}]
+    assert_equal xml_nodes[3][0], ["y", {"id"=>"'3'", "class"=>"\"three\""}]
     assert_equal xml_nodes[4], [["z", nil], "300"]
     assert_equal xml_nodes[5][0], ["/z", nil]
     assert_equal xml_nodes[6][0], ["/y", nil]
