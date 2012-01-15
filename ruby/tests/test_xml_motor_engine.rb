@@ -7,7 +7,7 @@ class TestXMLMotorEngine < Test::Unit::TestCase
   def setup
     @content = <<-xmldata
 	<dummy>
-	 <mmy> <y id='3'\nclass="three"> <z>300</z> </y> <y>5</y> </mmy>
+	 <mmy> <y id=\"3\"\nclass="three"> <z>300</z> </y> <y>5</y> </mmy>
 	</dummy>
        xmldata
   end
@@ -22,7 +22,7 @@ class TestXMLMotorEngine < Test::Unit::TestCase
 
     assert_equal xml_nodes[1][0], ["dummy", nil]
     assert_equal xml_nodes[2][0], ["mmy", nil]
-    assert_equal xml_nodes[3][0], ["y", {"id"=>"'3'", "class"=>"\"three\""}]
+    assert_equal xml_nodes[3][0], ["y", {"id"=>"\"3\"", "class"=>"\"three\""}]
     assert_equal xml_nodes[4], [["z", nil], "300"]
     assert_equal xml_nodes[5][0], ["/z", nil]
     assert_equal xml_nodes[6][0], ["/y", nil]
@@ -47,10 +47,9 @@ class TestXMLMotorEngine < Test::Unit::TestCase
   def test__grab_my_node
     XMLMotorEngine._splitter_ @content
     XMLMotorEngine._indexify_ XMLMotorEngine.xmlnodes
-
     assert_equal XMLMotorEngine._grab_my_node_([4,5]), ["300"]
-    assert_equal XMLMotorEngine._grab_my_node_([3,6,4,5], "id='3'"), [" <z>300</z> "]
-    assert_equal XMLMotorEngine._grab_my_node_([4,5], "id='3'"), []
+    assert_equal XMLMotorEngine._grab_my_node_([3,6,4,5], "id=\"3\""), [" <z>300</z> "]
+    assert_equal XMLMotorEngine._grab_my_node_([4,5], "id=\"3\""), []
   end
 
   def test_xml_extracter
@@ -60,8 +59,8 @@ class TestXMLMotorEngine < Test::Unit::TestCase
     assert_equal XMLMotorEngine.xml_extracter, nil
     assert_equal XMLMotorEngine.xml_extracter("z"), ["300"]
     assert_equal XMLMotorEngine.xml_extracter("y"), [" <z>300</z> ", "5"]
-    assert_equal XMLMotorEngine.xml_extracter(nil,"id='3'"), nil
-    assert_equal XMLMotorEngine.xml_extracter("y","id='3'"), [" <z>300</z> "]
+    assert_equal XMLMotorEngine.xml_extracter(nil,"id=\"3\""), nil
+    assert_equal XMLMotorEngine.xml_extracter("y","id=\"3\""), [" <z>300</z> "]
   end
 
   def test_xml_miner
@@ -69,8 +68,8 @@ class TestXMLMotorEngine < Test::Unit::TestCase
     assert_equal XMLMotorEngine.xml_miner(@content), nil
     assert_equal XMLMotorEngine.xml_miner(@content,"z"), ["300"]
     assert_equal XMLMotorEngine.xml_miner(@content, "y"), [" <z>300</z> ", "5"]
-    assert_equal XMLMotorEngine.xml_miner(@content, nil,"id='3'"), nil
-    assert_equal XMLMotorEngine.xml_miner(@content, "y","id='3'"), [" <z>300</z> "]
+    assert_equal XMLMotorEngine.xml_miner(@content, nil,"id=\"3\""), nil
+    assert_equal XMLMotorEngine.xml_miner(@content, "y","id=\"3\""), [" <z>300</z> "]
   end
 
   def test_xmlnodes
@@ -105,9 +104,9 @@ class TestXMLMotorEngine < Test::Unit::TestCase
     teardown; assert_equal XMLMotorEngine.pre_processed_content(xnodes), nil 
     teardown; assert_equal XMLMotorEngine.pre_processed_content(xnodes,xtags), nil 
     teardown; assert_equal XMLMotorEngine.pre_processed_content(xnodes,nil,"z"), ["300"]
-    teardown; assert_equal XMLMotorEngine.pre_processed_content(xnodes,nil,"y","id='3'"), [" <z>300</z> "]
+    teardown; assert_equal XMLMotorEngine.pre_processed_content(xnodes,nil,"y","id=\"3\""), [" <z>300</z> "]
     teardown; assert_equal XMLMotorEngine.pre_processed_content(xnodes,xtags,"z"), ["300"]
-    teardown; assert_equal XMLMotorEngine.pre_processed_content(xnodes,xtags,"y","id='3'"), [" <z>300</z> "]
+    teardown; assert_equal XMLMotorEngine.pre_processed_content(xnodes,xtags,"y","id=\"3\""), [" <z>300</z> "]
   end
 end
 

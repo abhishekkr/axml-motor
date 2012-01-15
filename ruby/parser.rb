@@ -5,6 +5,17 @@ module XMLStdout
   def self._nfo(mesag); puts "INFORMATION:: #{mesag}"; end
 end
 
+module XMLUtils
+  def self.dbqot_string(attrib_val)
+    return nil if attrib_val.nil?
+    matched_data = attrib_val.strip.match(/^'(.*)'$/)
+    return attrib_val if matched_data.nil?
+    matched_data = matched_data[0].gsub("\"","'")
+    matched_data[0] = matched_data[-1] = "\""
+    matched_data
+  end
+end
+
 module XMLIndexHandler
   def self.get_node_indexes(xml_motor, tag)
    xml_idx_to_find = []
@@ -68,11 +79,11 @@ module XMLChopper
     broken_attrib[1..-2].each do |attrib_part|
       value_n_attrib = attrib_part.split
       values = value_n_attrib[0..-2].join(' ')
-      attrs[attribs] = values
+      attrs[attribs] = XMLUtils.dbqot_string values
       attribs = value_n_attrib[-1].strip
     end
     values = broken_attrib.last.strip
-    attrs[attribs] = values
+    attrs[attribs] = XMLUtils.dbqot_string values
     attrs
   end
 end
@@ -134,7 +145,7 @@ module XMLMotorEngine
       node_stop = xml_to_find[ncount*2 +1]
       unless attrib_to_find.nil?
 	next if @xmlnodes[node_start][0][1].nil?
-        next unless @xmlnodes[node_start][0][1][attrib_key] == attrib_val
+        next unless @xmlnodes[node_start][0][1][attrib_key] == XMLUtils.dbqot_string(attrib_val)
       end
       nodes[ncount] ||= ""
       nodes[ncount] += @xmlnodes[node_start][1] unless @xmlnodes[node_start][1].nil?
