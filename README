@@ -26,4 +26,15 @@ axml-motor is a new easy and quick implementation of an XML Parser AND more
   tags_ = XMLMotorEngine._indexify_ nodes_
   nodes_array = XMLMotorEngine.pre_processed_content nodes_, tags_, "<<TAG_NAME>>"
   nodes_array = XMLMotorEngine.pre_processed_content nodes_, tags_, "<<TAG_NAME>>", "ATTRIB_KEY=ATTRIB_VALUE"
+|||||||||||||||||||||||||||||||||||||||||||||||
 
+above (earlier/default) usage just returns the data inside node_tag, without the tags around it
+
+[[ To Get NODE_TAG returned with the original root node ]]
+  nodes_array = XMLMotorEngine.pre_processed_content nodes_, tags_, "<<TAG_NAME>>", nil, true
+  nodes_array = XMLMotorEngine.pre_processed_content nodes_, tags_, "<<TAG_NAME>>", "ATTRIB_KEY=ATTRIB_VALUE", true
+  ~~~OR~~~
+  nodes_array = XMLMotor.get_node_from_file "_XML_FILE_", nil, true
+  nodes_array = XMLMotor.get_node_from_file "_XML_FILE_", "ATTRIB_KEY=ATTRIB_VALUE", true
+  nodes_array = XMLMotor.get_node_from_content "_XML_DATA_", nil, true
+  nodes_array = XMLMotor.get_node_from_content "_XML_DATA_", "ATTRIB_KEY=ATTRIB_VALUE", true

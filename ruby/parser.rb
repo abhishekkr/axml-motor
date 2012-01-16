@@ -97,6 +97,11 @@ module XMLJoiner
     end
     attributes
   end
+
+  def self.dejavu_node(node_block)
+    return nil if node_block.nil?
+    ["<#{node_block.first}#{dejavu_attributes(node_block.last)}>", "</#{node_block.first}>"]
+  end
 end
 
 ##
@@ -133,7 +138,7 @@ module XMLMotorEngine
     @xmltags
   end
 
-  def self._grab_my_node_ (xml_to_find, attrib_to_find=nil)
+  def self._grab_my_node_ (xml_to_find, attrib_to_find=nil, with_tag=false)
     unless attrib_to_find.nil?
       attrib_key = attrib_to_find.split(/=/)[0].strip
       attrib_val = attrib_to_find.split(/=/)[1..-1].join.strip
@@ -155,33 +160,37 @@ module XMLMotorEngine
         nodes[ncount] += "<" + @xmlnodes[node_idx][0][0] + any_attrib + ">"
         nodes[ncount] += @xmlnodes[node_idx][1] unless @xmlnodes[node_idx][1].nil?
       end
+      if with_tag
+        tagifyd = XMLJoiner.dejavu_node @xmlnodes[node_start][0]
+        nodes[ncount] = tagifyd.first + nodes[ncount] + tagifyd.last
+      end
     end
     nodes.delete(nil) unless attrib_to_find.nil?
     nodes
   end
 
-  def self.xml_extracter(tag_to_find=nil, attrib_to_find=nil)
+  def self.xml_extracter(tag_to_find=nil, attrib_to_find=nil, with_tag=false)
     my_nodes = nil
     if attrib_to_find.nil? and tag_to_find.nil?
     elsif attrib_to_find.nil?
       xml_to_find = XMLIndexHandler.get_node_indexes self, tag_to_find
-      my_nodes = _grab_my_node_ xml_to_find
+      my_nodes = _grab_my_node_ xml_to_find, nil, with_tag
     elsif tag_to_find.nil? 
       #
       XMLStdout._nfo "Just attrib-based search to come"
       #
     else
       xml_to_find = XMLIndexHandler.get_node_indexes self, tag_to_find
-      my_nodes = _grab_my_node_ xml_to_find, attrib_to_find
+      my_nodes = _grab_my_node_ xml_to_find, attrib_to_find, with_tag
     end
     my_nodes
   end  
 
-  def self.xml_miner(xmldata, tag_to_find=nil, attrib_to_find=nil)
+  def self.xml_miner(xmldata, tag_to_find=nil, attrib_to_find=nil, with_tag=false)
     return nil if xmldata.nil?
     _splitter_ xmldata
     _indexify_
-    xml_extracter tag_to_find, attrib_to_find
+    xml_extracter tag_to_find, attrib_to_find, with_tag
   end 
 
   def self.xmlnodes(xml_nodes=nil)
@@ -194,7 +203,7 @@ module XMLMotorEngine
     @xmltags
   end
 
-  def self.pre_processed_content(_nodes, _tags=nil, tag_to_find=nil, attrib_to_find=nil)
+  def self.pre_processed_content(_nodes, _tags=nil, tag_to_find=nil, attrib_to_find=nil, with_tag=false)
     begin
       xmlnodes _nodes
       unless _tags.nil?
@@ -202,7 +211,7 @@ module XMLMotorEngine
       else
         _indexify_ 
       end
-      return xml_extracter tag_to_find, attrib_to_find
+      return xml_extracter tag_to_find, attrib_to_find, with_tag
     rescue
       XMLStdout._err "Parsing processed XML Nodes."
     end
@@ -214,18 +223,18 @@ end
 # XMLMotor_EXECUTIONER ;)
 
 module XMLMotor
-  def self.get_node_from_file(file, my_tag=nil, my_attrib=nil)
+  def self.get_node_from_file(file, my_tag=nil, my_attrib=nil, with_tag=false)
     begin
-      return get_node_from_content(File.read(file.to_s), my_tag, my_attrib) if File.readable? file.to_s
+      return get_node_from_content(File.read(file.to_s), my_tag, my_attrib, with_tag) if File.readable? file.to_s
     rescue
       XMLStdout._err "#{file} is not readable."
     end
     return ""
   end
 
-  def self.get_node_from_content(content, my_tag=nil, my_attrib=nil)
+  def self.get_node_from_content(content, my_tag=nil, my_attrib=nil, with_tag=false)
     begin
-      return XMLMotorEngine.xml_miner content, my_tag, my_attrib unless content.nil?
+      return XMLMotorEngine.xml_miner content, my_tag, my_attrib, with_tag unless content.nil?
     rescue
       XMLStdout._err "Parsing String Content #{content}"
     end
