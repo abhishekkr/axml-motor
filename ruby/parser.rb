@@ -66,7 +66,7 @@ module XMLChopper
     tag_name = in_tag_split.first
     attribzone = in_tag_split[1..-1].flatten.join(' ')
     attrs = get_attribute_hash attribzone
-    [[tag_name,attrs],out_tag]
+    [[tag_name.downcase, attrs],out_tag]
   end
 
   def self.get_attribute_hash(attribzone)
@@ -119,7 +119,7 @@ module XMLMotorEngine
     idx = 1
     depth = 0
     @xmlnodes[1..-1].each do |xnode|
-      tag_name = xnode[0][0].strip
+      tag_name = xnode[0][0].strip.downcase
       unless tag_name.match(/^\/.*/) then
         @xmltags[tag_name] ||= {}
         @xmltags[tag_name][depth] ||= []
@@ -178,7 +178,7 @@ module XMLMotorEngine
     elsif tag_to_find.nil? 
       index_to_find = @xmltags.collect {|xtag| xtag[1].collect {|val| val[1] }}.flatten
     else
-      index_to_find = XMLIndexHandler.get_tag_indexes self, tag_to_find
+      index_to_find = XMLIndexHandler.get_tag_indexes self, tag_to_find.downcase
     end
     _grab_my_node_ index_to_find, attrib_to_find, with_tag
   end  
