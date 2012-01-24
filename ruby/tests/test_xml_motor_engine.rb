@@ -7,7 +7,7 @@ class TestXMLMotorEngine < Test::Unit::TestCase
   def setup
     @content = <<-xmldata
 	<dummy>
-	 <mmy> <y id=\"3\"\nclass="three"> <z>300</z> </y> <y>5</y> </mmy>
+	 <mmy> <y id=\"3\"\nclass="yada"> <z>300</z> </y> <y class="yada">5</y> </mmy>
 	</dummy>
        xmldata
   end
@@ -22,11 +22,11 @@ class TestXMLMotorEngine < Test::Unit::TestCase
 
     assert_equal xml_nodes[1][0], ["dummy", nil]
     assert_equal xml_nodes[2][0], ["mmy", nil]
-    assert_equal xml_nodes[3][0], ["y", {"id"=>"\"3\"", "class"=>"\"three\""}]
+    assert_equal xml_nodes[3][0], ["y", {"id"=>"\"3\"", "class"=>"\"yada\""}]
     assert_equal xml_nodes[4], [["z", nil], "300"]
     assert_equal xml_nodes[5][0], ["/z", nil]
     assert_equal xml_nodes[6][0], ["/y", nil]
-    assert_equal xml_nodes[7], [["y", nil], "5"]
+    assert_equal xml_nodes[7], [["y", {"class"=>"\"yada\""}], "5"]
     assert_equal xml_nodes[8][0], ["/y", nil]
     assert_equal xml_nodes[9][0], ["/mmy", nil]
     assert_equal xml_nodes[10][0], ["/dummy", nil]
@@ -44,12 +44,25 @@ class TestXMLMotorEngine < Test::Unit::TestCase
     assert_equal xml_tags["a"], nil 
   end
 
-  def test__grab_my_node
+  def test__grab_my_node_
     XMLMotorEngine._splitter_ @content
     XMLMotorEngine._indexify_ XMLMotorEngine.xmlnodes
+
     assert_equal XMLMotorEngine._grab_my_node_([4,5]), ["300"]
-    assert_equal XMLMotorEngine._grab_my_node_([3,6,4,5], "id=\"3\""), [" <z>300</z> "]
     assert_equal XMLMotorEngine._grab_my_node_([4,5], "id=\"3\""), []
+    assert_equal XMLMotorEngine._grab_my_node_([3,6,4,5], "id=\"3\""), [" <z>300</z> "]
+    assert_equal XMLMotorEngine._grab_my_node_([3,6,7,8], ["class='yada'"]), [" <z>300</z> ", "5"]
+    assert_equal XMLMotorEngine._grab_my_node_([3,6,7,8], ["id=\"3\"","class='yada'"]), [" <z>300</z> "]
+    assert_equal XMLMotorEngine._grab_my_node_([3,6,7,8], ["class='yada'","id=\"3\""]), [" <z>300</z> "]
+  end
+
+  def test__get_attrib_key_val_
+    XMLMotorEngine._splitter_ @content
+    XMLMotorEngine._indexify_ XMLMotorEngine.xmlnodes
+
+    assert_equal XMLMotorEngine._get_attrib_key_val_("id = 007"), ["id", "007"]
+    assert_equal XMLMotorEngine._get_attrib_key_val_("james='bond'"), ["james", "\"bond\""]
+    assert_equal XMLMotorEngine._get_attrib_key_val_("james=\"bond\""), ["james", "\"bond\""]
   end
 
   def test_xml_extracter

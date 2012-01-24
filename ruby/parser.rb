@@ -104,9 +104,6 @@ module XMLJoiner
   end
 end
 
-##
-# main class
-
 module XMLMotorEngine
   def self._splitter_(xmldata)
     @xmlnodes = [xmldata.split(/</)[0]]
@@ -138,19 +135,24 @@ module XMLMotorEngine
     @xmltags
   end
 
+  def self._get_attrib_key_val_ (attrib)
+    attrib_key = attrib.split(/=/)[0].strip
+    attrib_val = attrib.split(/=/)[1..-1].join.strip
+    [attrib_key, XMLUtils.dbqot_string(attrib_val)]
+  end
+
   def self._grab_my_node_ (xml_to_find, attrib_to_find=nil, with_tag=false)
-    unless attrib_to_find.nil?
-      attrib_key = attrib_to_find.split(/=/)[0].strip
-      attrib_val = attrib_to_find.split(/=/)[1..-1].join.strip
+    unless attrib_to_find.nil? or attrib_to_find.empty?
+      attrib_keyval = [attrib_to_find].flatten.collect{|keyval| _get_attrib_key_val_ keyval }
     end
     nodes = []
     node_count = xml_to_find.size/2 -1
     0.upto node_count do |ncount|
       node_start = xml_to_find[ncount*2]
       node_stop = xml_to_find[ncount*2 +1]
-      unless attrib_to_find.nil?
+      unless attrib_to_find.nil? or attrib_to_find.empty?
 	next if @xmlnodes[node_start][0][1].nil?
-        next unless @xmlnodes[node_start][0][1][attrib_key] == XMLUtils.dbqot_string(attrib_val)
+        next if attrib_keyval.collect{|keyval| @xmlnodes[node_start][0][1][keyval.first] == keyval.last}.include? false
       end
       nodes[ncount] ||= ""
       nodes[ncount] += @xmlnodes[node_start][1] unless @xmlnodes[node_start][1].nil?
