@@ -18,12 +18,12 @@ class TestXMLIndexHandler < Test::Unit::TestCase
     XMLMotorEngine.instance_variable_set "@xmltags", nil
   end
 
-  def test_get_node_indexes
-    assert_equal XMLIndexHandler.get_node_indexes(XMLMotorEngine,"dummy"), [1, 12]
-    assert_equal XMLIndexHandler.get_node_indexes(XMLMotorEngine,"mmy"), [2, 11]
-    assert_equal XMLIndexHandler.get_node_indexes(XMLMotorEngine,"y"), [3, 6, 7, 8]
-    assert_equal XMLIndexHandler.get_node_indexes(XMLMotorEngine,"z"), [4, 5, 9, 10]
-    assert_equal XMLIndexHandler.get_node_indexes(XMLMotorEngine,"not_exists"), []
+  def test_get_tag_indexes
+    assert_equal XMLIndexHandler.get_tag_indexes(XMLMotorEngine,"dummy"), [1, 12]
+    assert_equal XMLIndexHandler.get_tag_indexes(XMLMotorEngine,"mmy"), [2, 11]
+    assert_equal XMLIndexHandler.get_tag_indexes(XMLMotorEngine,"y"), [3, 6, 7, 8]
+    assert_equal XMLIndexHandler.get_tag_indexes(XMLMotorEngine,"z"), [4, 5, 9, 10]
+    assert_equal XMLIndexHandler.get_tag_indexes(XMLMotorEngine,"not_exists"), []
   end
 
   def test_expand_node_indexes
