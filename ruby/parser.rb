@@ -194,13 +194,11 @@ module XMLMotorEngine
   end 
 
   def self.xmlnodes(xml_nodes=nil)
-    @xmlnodes = xml_nodes unless xml_nodes.nil?
-    @xmlnodes
+    @xmlnodes = xml_nodes || @xmlnodes
   end
 
   def self.xmltags(xml_tags=nil)
-    @xmltags = xml_tags unless xml_tags.nil?
-    @xmltags
+    @xmltags = xml_tags || @xmltags
   end
 
   def self.pre_processed_content(_nodes, _tags=nil, tag_to_find=nil, attrib_to_find=nil, with_tag=false)
