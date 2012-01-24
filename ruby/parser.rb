@@ -172,20 +172,15 @@ module XMLMotorEngine
   end
 
   def self.xml_extracter(tag_to_find=nil, attrib_to_find=nil, with_tag=false)
-    my_nodes = nil
+    index_to_find = []
     if attrib_to_find.nil? and tag_to_find.nil?
-    elsif attrib_to_find.nil?
-      xml_to_find = XMLIndexHandler.get_node_indexes self, tag_to_find
-      my_nodes = _grab_my_node_ xml_to_find, nil, with_tag
+      return nil
     elsif tag_to_find.nil? 
-      #
-      XMLStdout._nfo "Just attrib-based search to come"
-      #
+      index_to_find = @xmltags.collect {|xtag| xtag[1].collect {|val| val[1] }}.flatten
     else
-      xml_to_find = XMLIndexHandler.get_node_indexes self, tag_to_find
-      my_nodes = _grab_my_node_ xml_to_find, attrib_to_find, with_tag
+      index_to_find = XMLIndexHandler.get_tag_indexes self, tag_to_find
     end
-    my_nodes
+    _grab_my_node_ index_to_find, attrib_to_find, with_tag
   end  
 
   def self.xml_miner(xmldata, tag_to_find=nil, attrib_to_find=nil, with_tag=false)

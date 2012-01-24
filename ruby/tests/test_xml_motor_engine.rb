@@ -72,7 +72,7 @@ class TestXMLMotorEngine < Test::Unit::TestCase
     assert_equal XMLMotorEngine.xml_extracter, nil
     assert_equal XMLMotorEngine.xml_extracter("z"), ["300"]
     assert_equal XMLMotorEngine.xml_extracter("y"), [" <z>300</z> ", "5"]
-    assert_equal XMLMotorEngine.xml_extracter(nil,"id=\"3\""), nil
+    assert_equal XMLMotorEngine.xml_extracter(nil,"id=\"3\""), [" <z>300</z> "]
     assert_equal XMLMotorEngine.xml_extracter("y","id=\"3\""), [" <z>300</z> "]
   end
 
@@ -81,7 +81,7 @@ class TestXMLMotorEngine < Test::Unit::TestCase
     assert_equal XMLMotorEngine.xml_miner(@content), nil
     assert_equal XMLMotorEngine.xml_miner(@content,"z"), ["300"]
     assert_equal XMLMotorEngine.xml_miner(@content, "y"), [" <z>300</z> ", "5"]
-    assert_equal XMLMotorEngine.xml_miner(@content, nil,"id=\"3\""), nil
+    assert_equal XMLMotorEngine.xml_miner(@content, nil,"id=\"3\""), [" <z>300</z> "]
     assert_equal XMLMotorEngine.xml_miner(@content, "y","id=\"3\""), [" <z>300</z> "]
   end
 
