@@ -22,10 +22,16 @@ axml-motor is a new easy and quick implementation of an XML Parser AND more
 
 [[ To Search More Than One QUERIES ]]
   str = <<XML_DATA>>
-  nodes_ = XMLMotorEngine._splitter_ str
-  tags_ = XMLMotorEngine._indexify_ nodes_
-  nodes_array = XMLMotorEngine.pre_processed_content nodes_, tags_, "<<TAG_NAME>>"
-  nodes_array = XMLMotorEngine.pre_processed_content nodes_, tags_, "<<TAG_NAME>>", "ATTRIB_KEY=ATTRIB_VALUE"
+  nodes_ = XMLMotor.splitter str
+  tags_ = XMLMotor.indexify nodes_
+    ##### just fetch all items inside required TAG
+  nodes_array = XMLMotor.xmldata(nodes_, tags_, "<<TAG_NAME>>")
+    ##### fetch all items inside required TAG with given Attribute['Key=Value'] array
+  nodes_array = XMLMotorEngine.xmldata(nodes_, tags_, "<<TAG_NAME>>", ["ATTRIB_KEY=ATTRIB_VALUE"])
+    ##### fetch all items inside required TAG with TAGs value
+  nodes_array = XMLMotorEngine.xmldata(nodes_, tags_, "<<TAG_NAME>>", true)
+    ##### fetch all items inside required TAG with given Attribute['Key=Value'] array and with TAGs
+  nodes_array = XMLMotorEngine.xmldata(nodes_, tags_, "<<TAG_NAME>>", ["ATTRIB_KEY=ATTRIB_VALUE"], true)
 |||||||||||||||||||||||||||||||||||||||||||||||
 
 above (earlier/default) usage just returns the data inside node_tag, without the tags around it

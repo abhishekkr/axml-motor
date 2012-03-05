@@ -235,5 +235,15 @@ module XMLMotor
     end
     return ""
   end
+
+  def self.splitter(xmldata)
+    XMLMotorEngine._splitter_ xmldata
+  end
+  def self.indexify(nodes=nil)
+    XMLMotorEngine._indexify_ nodes
+  end
+  def self.xmldata(nodes, tags=nil, tag_to_find=nil, attrib_to_find=nil, with_tag=false)
+    XMLMotorEngine.pre_processed_content nodes, tags, tag_to_find, attrib_to_find, with_tag
+  end
 end
 
