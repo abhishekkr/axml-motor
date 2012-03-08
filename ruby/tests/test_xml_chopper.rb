@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'test/unit'
-require '../parser.rb'
+require '../xml-motor.rb'
 
 class TestXMLChopper < Test::Unit::TestCase
   def test_get_tag_attrib_value

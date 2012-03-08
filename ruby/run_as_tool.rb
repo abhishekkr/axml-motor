@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require File.join(File.dirname(__FILE__), "parser.rb")
+require File.join(File.dirname(__FILE__), "xml-motor.rb")
 
 ##
 # just a direct_execute method
@@ -22,7 +22,7 @@ module XMLMotorAsTool
 
       [As A Code Library] How To Use:
         Loading:
-         + 'require' the 'parser.rb'
+         + 'require' the 'xml-motor.rb'
 
         Usage:
            [[ To Search Just One QUERY ]]

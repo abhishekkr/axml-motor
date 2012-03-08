@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'test/unit'
-require  File.expand_path(File.join(File.dirname(__FILE__), "../parser.rb"))
+require  File.expand_path(File.join(File.dirname(__FILE__), "../xml-motor.rb"))
 
 class TestXMLMotorEngine < Test::Unit::TestCase
   def setup

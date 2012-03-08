@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'test/unit'
-require '../parser.rb'
+require '../xml-motor.rb'
 
 class TestXMLUtils < Test::Unit::TestCase
   def test_dbqot_string
