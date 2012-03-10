@@ -1,0 +1,26 @@
+require File.join File.dirname(File.expand_path __FILE__), "xml-motor.rb"
+
+namespace :xml do
+  namespace :motor do
+    desc 'count the (some more than) total line of codes'
+    task :lines do
+      xml_motor = File.join(File.dirname(File.expand_path __FILE__), 'xml-motor.rb')
+      xml_motor_libs = File.join(File.dirname(File.expand_path __FILE__), 'xml-motor', '*.rb')
+      lines = File.open(xml_motor, 'r'){|fyl| fyl.count }
+      Dir.glob(xml_motor_libs).each do |lib|
+        lines += File.open(lib, 'r'){|fyl| fyl.count }
+      end
+      puts "Total line (code/comment/blanks) counts in all code files: #{lines}"
+    end
+
+    desc 'remove tailing whitespace'
+    task :notail do
+      xml_motor = File.join(File.dirname(File.expand_path __FILE__), 'xml-motor.rb')
+      xml_motor_libs = File.join(File.dirname(File.expand_path __FILE__), 'xml-motor', '*.rb')
+      %x{sed -i 's/\ *$//g' #{xml_motor}}
+      Dir.glob(xml_motor_libs).each do |lib|
+        %x{sed -i 's/\ *$//g' #{lib}}
+      end
+    end
+  end
+end
