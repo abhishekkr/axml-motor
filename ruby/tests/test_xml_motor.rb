@@ -29,7 +29,7 @@ class TestXMLMotor < Test::Unit::TestCase
   end
 
   def test_splitter
-    content = "<a>1<b>2</b>3<c>4</c>5</a>"
+    content = "<a>1<b>2</b>3<c>4</c>5<b/>6</a>"
     xnodes = XMLMotor.splitter content
     assert_equal xnodes[0], ""
     assert_equal xnodes[1], [["a", nil], "1"]
@@ -37,7 +37,8 @@ class TestXMLMotor < Test::Unit::TestCase
     assert_equal xnodes[3], [["/b", nil], "3"]
     assert_equal xnodes[4], [["c", nil], "4"]
     assert_equal xnodes[5], [["/c", nil], "5"]
-    assert_equal xnodes[6], [["/a", nil], ""]
+    assert_equal xnodes[6], [["b/", nil], "6"]
+    assert_equal xnodes[7], [["/a", nil], ""]
   end
 
   def test_indexify

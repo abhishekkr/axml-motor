@@ -2,7 +2,7 @@ module XMLMotorEngine
   def self._splitter_(xmldata)
     @xmlnodes = [xmldata.split(/</)[0]]
     xmldata.split(/</)[1..-1].each do |x1|
-      @xmlnodes.push  XMLChopper.get_tag_attrib_value(x1)
+      @xmlnodes.push XMLChopper.get_tag_attrib_value(x1)
     end
     @xmlnodes
   end
@@ -14,15 +14,20 @@ module XMLMotorEngine
     depth = 0
     @xmlnodes[1..-1].each do |xnode|
       tag_name = xnode[0][0].strip.downcase
-      unless tag_name.match(/^\/.*/) then
+      if tag_name.match(/^\/.*/) then
+        depth -= 1
+        @xmltags[tag_name[1..-1]][depth] ||= []
+        @xmltags[tag_name[1..-1]][depth].push idx
+      elsif tag_name.chomp.match(/^\/$/) then
+        @xmltags[tag_name] ||= {}
+        @xmltags[tag_name][depth] ||= []
+        @xmltags[tag_name][depth].push idx
+        @xmltags[tag_name][depth].push idx
+      else
         @xmltags[tag_name] ||= {}
         @xmltags[tag_name][depth] ||= []
         @xmltags[tag_name][depth].push idx
         depth += 1
-      else
-        depth -= 1
-        @xmltags[tag_name[1..-1]][depth] ||= []
-        @xmltags[tag_name[1..-1]][depth].push idx
       end
       idx +=1
     end
