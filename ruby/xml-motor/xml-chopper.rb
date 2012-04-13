@@ -14,6 +14,7 @@ module XMLChopper
     attribzone = attribzone.strip unless attribzone.nil?
     return nil if attribzone.nil? or attribzone==""
     attrs = {}
+  begin
     broken_attrib = attribzone.split(/=/)
     attribs = broken_attrib.first.strip
     values = nil
@@ -25,6 +26,9 @@ module XMLChopper
     end
     values = broken_attrib.last.strip
     attrs[attribs] = XMLUtils.dbqot_string values
+  rescue
+    return attrs
+  end
     attrs
   end
 end
