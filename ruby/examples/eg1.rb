@@ -52,3 +52,10 @@ puts <<-X4
     puts XMLMotor.xmldata xsplit, xtags, 'dummy.my', ['class="sys"', 'id="mem"']
   X4
 puts "\t#{XMLMotor.xmldata xsplit, xtags, 'dummy.my', ['class="sys"', 'id="mem"']}"
+puts <<-X5
+  [] searching for values of absent node:
+    puts XMLMotor.xmldata xsplit, xtags, 'dummy.yumumy', ['cla="ss"']
+    puts XMLMotor.xmldata xsplit, xtags, 'dummy.yumumy'
+  X5
+puts "\t#{XMLMotor.xmldata xsplit, xtags, 'dummy.yumumy', ['cla="ss"']}"
+puts "\t#{XMLMotor.xmldata xsplit, xtags, 'dummy.yumumy'}"
