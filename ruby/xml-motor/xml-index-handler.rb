@@ -15,6 +15,7 @@ module XMLIndexHandler
     end
    rescue
     XMLStdout._err "Finding index for tag:#{tag}.\nLook if it's actually present in the provided XML."
+    return []
    end
    xml_idx_to_find
   end
