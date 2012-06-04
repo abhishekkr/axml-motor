@@ -9,6 +9,8 @@ by,
 AbhishekKr
 http://www.twitter.com/aBionic
 
+to get the verbosity of run, set a environment variable VERBOSE=err (actually any value)
+
 [in pre-alpha stage]
 current status: near to implementing base algo for basic xml
 
