@@ -1,8 +1,17 @@
 module XMLMotorEngine
   def self._splitter_(xmldata)
-    @xmlnodes = [xmldata.split(/</)[0]]
-    xmldata.split(/</)[1..-1].each do |x1|
-      @xmlnodes.push XMLChopper.get_tag_attrib_value(x1)
+    start_splits = xmldata.split(/</)
+    @xmlnodes = [start_splits[0]]
+    start_splits[1..-1].each do |val|
+      tag_attr = XMLChopper.get_tag_attrib_value(val.gsub('/>','>'))
+      if val.match(/\/>/)
+        post_attr = tag_attr[1]
+        tag_attr[1] = ''
+        @xmlnodes.push tag_attr
+        @xmlnodes.push [["/#{tag_attr[0][0]}", nil], post_attr]
+      else
+        @xmlnodes.push tag_attr
+      end
     end
     @xmlnodes
   end
@@ -50,7 +59,7 @@ module XMLMotorEngine
       node_start = index_to_find[ncount*2]
       node_stop = index_to_find[ncount*2 +1]
       unless attrib_to_find.nil? or attrib_to_find.empty?
-	next if @xmlnodes[node_start][0][1].nil?
+      	next if @xmlnodes[node_start][0][1].nil?
         next if attrib_keyval.collect{|keyval| @xmlnodes[node_start][0][1][keyval.first] == keyval.last}.include? false
       end
       nodes[ncount] ||= ""

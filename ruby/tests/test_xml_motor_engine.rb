@@ -9,6 +9,7 @@ class TestXMLMotorEngine < Test::Unit::TestCase
 	<dummy>
 	 <mmy> <y id=\"3\"\nclass="yada"> <z>300</z> </y> <y class="yada">5</y> </mmy>
 	</dummy>
+  <solo/>
        xmldata
   end
   def teardown
@@ -30,6 +31,8 @@ class TestXMLMotorEngine < Test::Unit::TestCase
     assert_equal xml_nodes[8][0], ["/y", nil]
     assert_equal xml_nodes[9][0], ["/mmy", nil]
     assert_equal xml_nodes[10][0], ["/dummy", nil]
+    assert_equal xml_nodes[11], [["solo", nil], ""]
+    assert_equal xml_nodes[12][0], ["/solo", nil]
   end
 
   def test__indexify_

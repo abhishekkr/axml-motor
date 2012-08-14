@@ -13,7 +13,7 @@ class TestXMLMotor < Test::Unit::TestCase
 
   def test_get_node_from_file
     xnodes = XMLMotor.get_node_from_file(@fyle, @my_tag)
-    assert_equal xnodes.size, 3
+    assert_equal xnodes.size, 4
     xnodes = XMLMotor.get_node_from_file(@fyle, @my_tag, @my_attrib)
     assert_equal xnodes.size, 1
   end
@@ -22,7 +22,7 @@ class TestXMLMotor < Test::Unit::TestCase
     fo = File.open(@fyle, "r")
     content = fo.read
     xnodes = XMLMotor.get_node_from_content(content, @my_tag)
-    assert_equal xnodes.size, 3
+    assert_equal xnodes.size, 4
     xnodes = XMLMotor.get_node_from_content(content, @my_tag, @my_attrib)
     assert_equal xnodes.size, 1
     fo.close
@@ -37,8 +37,9 @@ class TestXMLMotor < Test::Unit::TestCase
     assert_equal xnodes[3], [["/b", nil], "3"]
     assert_equal xnodes[4], [["c", nil], "4"]
     assert_equal xnodes[5], [["/c", nil], "5"]
-    assert_equal xnodes[6], [["b/", nil], "6"]
-    assert_equal xnodes[7], [["/a", nil], ""]
+    assert_equal xnodes[6], [["b", nil], ""]
+    assert_equal xnodes[7], [["/b", nil], "6"]
+    assert_equal xnodes[8], [["/a", nil], ""]
   end
 
   def test_indexify

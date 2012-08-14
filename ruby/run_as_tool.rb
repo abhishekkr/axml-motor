@@ -119,14 +119,21 @@ end
 unless ARGV.empty?
   if ARGV[0].match("-eg")
     puts "+"*100
-    puts "XML: 'XML <div>parsing <span>is</span> revived</div> now. ~=ABK=~'", "NODE: div.none"
+    puts "XML: 'XML <div>parsing <br/> <span>is</span> revived <br/> </div> now. ~=ABK=~'", "NODE: br"
+    puts XMLMotor.get_node_from_content "XML <div>parsing <span>is</span> revived</div> now. ~=ABK=~", "br"
+    puts "+"*100
+    puts "XML: 'XML <div>parsing <br/> <span>is</span> revived <br/> </div> now. ~=ABK=~'", "NODE: div.none"
     puts XMLMotor.get_node_from_content "XML <div>parsing <span>is</span> revived</div> now. ~=ABK=~", "div.none"
     puts "+"*100
     puts "XML: 'XML <div>parsing <span>is</span> revived</div> now. ~=ABK=~'", "NODE: span"
     puts XMLMotor.get_node_from_content "XML <div>parsing <span>is</span> revived</div> now. ~=ABK=~", "span"
     puts "+"*100
     puts "XML: 'XML <div>parsing <span>is</span> revived</div> now. ~=ABK=~'", "NODE: div"
-    puts XMLMotor.get_node_from_content "XML <div>parsing <span>is</span> revived</div> now. ~=ABK=~", "div" 
+    puts XMLMotor.get_node_from_content "XML <div>parsing <span>is</span> revived</div> now. ~=ABK=~", "div"
+    puts "+"*100
+    puts "XML: 'XML <div>parsing <span>is</span> revived</div> now. <split line='short'/>~=ABK=~<split line='long'/>'", "NODE: split"
+    solonode = XMLMotor.get_node_from_content "XML: 'XML <div>parsing <span>is</span> revived</div> now. <split line='short'/>~=ABK=~<split line='long'/>'", "split", nil, true
+    puts solonode, "Count: #{solonode.count}"
     puts "+"*100
     exit 0
   end
