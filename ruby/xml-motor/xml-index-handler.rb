@@ -2,7 +2,7 @@ module XMLIndexHandler
   def self.get_tag_indexes(xml_motor, tag)
    xml_idx_to_find = []
    begin
-    xml_motor.xmltags[tag.split(".")[0]].each_value {|val|  xml_idx_to_find.push val }
+    xml_motor.xmltags[tag.split(".")[0]].each_value {|val| xml_idx_to_find.push val }
     xml_idx_to_find = xml_idx_to_find.flatten
 
     tag.split(".")[1..-1].each do |tag_i|

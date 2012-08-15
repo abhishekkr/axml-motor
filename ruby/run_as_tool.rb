@@ -135,6 +135,22 @@ unless ARGV.empty?
     solonode = XMLMotor.get_node_from_content "XML: 'XML <div>parsing <span>is</span> revived</div> now. <split line='short'/>~=ABK=~<split line='long'/>'", "split", nil, true
     puts solonode, "Count: #{solonode.count}"
     puts "+"*100
+    puts "XML: 'XML <div>parsing <span>is</span> revived</div> now. <split line='short'/>~=ABK=~<split line='long'/>'", "ATTRIB: line='short'"
+    solonode = XMLMotor.get_node_from_content "XML: 'XML <div>parsing <span>is</span> revived</div> now. <split line='short'/>~=ABK=~<split line='long'/>'", nil, "line='short'", true
+    puts solonode, "Count: #{solonode.count}"
+    puts "+"*100
+    puts "XML: 'XML <div>parsing <span>is</span> revived</div> now. <split line='short'/>~=ABK=~<split line='long'/>'", "ATTRIB: line"
+    solonode = XMLMotor.get_node_from_content "XML: 'XML <div>parsing <span>is</span> revived</div> now. <split line='short'/>~=ABK=~<split line='long'/>'", nil, "line", true
+    puts solonode, "Count: #{solonode.count}"
+    puts "+"*100
+    puts "XML: 'XML <div>parsing <span>is</span> revived</div> now. <split line='short' color='green'/>~=ABK=~<split line='long'/>'", "ATTRIB: line, color"
+    solonode = XMLMotor.get_node_from_content "XML: 'XML <div>parsing <span>is</span> revived</div> now. <split line='short' color='green'/>~=ABK=~<split line='long'/>'", nil, ["line","color"], true
+    puts solonode, "Count: #{solonode.count}"
+    puts "+"*100
+    puts "XML: 'XML <div>parsing <span>is</span> revived</div> now. <split line='short' color='green'/>~=ABK=~<split line='long'/>'", "ATTRIB: line, ='green'"
+    solonode = XMLMotor.get_node_from_content "XML: 'XML <div>parsing <span>is</span> revived</div> now. <split line='short' color='green'/>~=ABK=~<split line='long'/>'", nil, ["line=","='green'"], true
+    puts solonode, "Count: #{solonode.count}"
+    puts "+"*100
     exit 0
   end
 end

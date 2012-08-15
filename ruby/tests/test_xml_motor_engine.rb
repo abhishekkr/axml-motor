@@ -44,7 +44,8 @@ class TestXMLMotorEngine < Test::Unit::TestCase
     assert_equal xml_tags["mmy"], {1 => [2,9]}
     assert_equal xml_tags["y"], {2 => [3,6,7,8]}
     assert_equal xml_tags["z"], {3 => [4,5]}
-    assert_equal xml_tags["a"], nil 
+    assert_equal xml_tags["solo"], {0 => [11,12]}
+    assert_equal xml_tags["a"], nil
   end
 
   def test__grab_my_node_
@@ -57,6 +58,14 @@ class TestXMLMotorEngine < Test::Unit::TestCase
     assert_equal XMLMotorEngine._grab_my_node_([3,6,7,8], ["class='yada'"]), [" <z>300</z> ", "5"]
     assert_equal XMLMotorEngine._grab_my_node_([3,6,7,8], ["id=\"3\"","class='yada'"]), [" <z>300</z> "]
     assert_equal XMLMotorEngine._grab_my_node_([3,6,7,8], ["class='yada'","id=\"3\""]), [" <z>300</z> "]
+    assert_equal XMLMotorEngine._grab_my_node_([3,6,7,8], ["class"]), [" <z>300</z> ", "5"]
+    assert_equal XMLMotorEngine._grab_my_node_([1,10,2,9,3,6,7,8,4,5,11,12], ["class"]), [" <z>300</z> ", "5"]
+    assert_equal XMLMotorEngine._grab_my_node_([3,6,7,8], ["='3'"]), [" <z>300</z> "]
+    assert_equal XMLMotorEngine._grab_my_node_([1,10,2,9,3,6,7,8,4,5,11,12], ["='3'"]), [" <z>300</z> "]
+    assert_equal XMLMotorEngine._grab_my_node_([3,6,7,8], ["id", "='yada'"]), [" <z>300</z> "]
+    assert_equal XMLMotorEngine._grab_my_node_([1,10,2,9,3,6,7,8,4,5,11,12], ["id=", "='yada'"]), [" <z>300</z> "]
+    assert_equal XMLMotorEngine._grab_my_node_([3,6,7,8], ["id", "='3'"]), [" <z>300</z> "]
+    assert_equal XMLMotorEngine._grab_my_node_([3,6,7,8], ["id", "='5'"]), []
   end
 
   def test__get_attrib_key_val_
