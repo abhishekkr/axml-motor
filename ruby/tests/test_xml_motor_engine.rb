@@ -68,6 +68,16 @@ class TestXMLMotorEngine < Test::Unit::TestCase
     assert_equal XMLMotorEngine._grab_my_node_([3,6,7,8], ["id", "='5'"]), []
   end
 
+  def test__grab_my_attrib_
+    XMLMotorEngine._splitter_ @content
+    XMLMotorEngine._indexify_ XMLMotorEngine.xmlnodes
+
+    assert_equal XMLMotorEngine._grab_my_attrib_("id", [4,5]), []
+    assert_equal XMLMotorEngine._grab_my_attrib_("class", [7,8]), ["\"yada\""]
+    assert_equal XMLMotorEngine._grab_my_attrib_("class", [7,8], "id"), []
+    assert_equal XMLMotorEngine._grab_my_attrib_("class", [3,6], "id"), ["\"yada\""]
+  end
+
   def test__get_attrib_key_val_
     XMLMotorEngine._splitter_ @content
     XMLMotorEngine._indexify_ XMLMotorEngine.xmlnodes
@@ -87,6 +97,10 @@ class TestXMLMotorEngine < Test::Unit::TestCase
     assert_equal XMLMotorEngine.xml_extracter(nil,"id=\"3\""), [" <z>300</z> "]
     assert_equal XMLMotorEngine.xml_extracter(nil, ["id=\"3\"", "class='yada'"]), [" <z>300</z> "]
     assert_equal XMLMotorEngine.xml_extracter("y","id=\"3\""), [" <z>300</z> "]
+    assert_equal XMLMotorEngine.xml_extracter('y',nil,false,'id'), ["\"3\""]
+    assert_equal XMLMotorEngine.xml_extracter('y',nil,false,'class'), ["\"yada\"", "\"yada\""]
+    assert_equal XMLMotorEngine.xml_extracter('y', ["id=\"3\""], false, 'class'), ["\"yada\""]
+    assert_equal XMLMotorEngine.xml_extracter(nil, ["id=\"3\""], false, 'class'), ["\"yada\""]
   end
 
   def test_xml_miner
@@ -126,14 +140,17 @@ class TestXMLMotorEngine < Test::Unit::TestCase
     xtags = XMLMotorEngine.xmltags
 
     teardown; assert_equal XMLMotorEngine.pre_processed_content(nil), nil
-    teardown; assert_equal XMLMotorEngine.pre_processed_content(""), nil 
-    teardown; assert_equal XMLMotorEngine.pre_processed_content("",xtags), nil 
-    teardown; assert_equal XMLMotorEngine.pre_processed_content(xnodes), nil 
-    teardown; assert_equal XMLMotorEngine.pre_processed_content(xnodes,xtags), nil 
+    teardown; assert_equal XMLMotorEngine.pre_processed_content(""), nil
+    teardown; assert_equal XMLMotorEngine.pre_processed_content("",xtags), nil
+    teardown; assert_equal XMLMotorEngine.pre_processed_content(xnodes), nil
+    teardown; assert_equal XMLMotorEngine.pre_processed_content(xnodes,xtags), nil
     teardown; assert_equal XMLMotorEngine.pre_processed_content(xnodes,nil,"z"), ["300"]
     teardown; assert_equal XMLMotorEngine.pre_processed_content(xnodes,nil,"y","id=\"3\""), [" <z>300</z> "]
     teardown; assert_equal XMLMotorEngine.pre_processed_content(xnodes,xtags,"z"), ["300"]
     teardown; assert_equal XMLMotorEngine.pre_processed_content(xnodes,xtags,"y","id=\"3\""), [" <z>300</z> "]
+    teardown; assert_equal XMLMotorEngine.pre_processed_content(xnodes,xtags,"y","id=", false, 'id'), ["\"3\""]
+    teardown; assert_equal XMLMotorEngine.pre_processed_content(xnodes,xtags,"y", nil, false, 'id'), ["\"3\""]
+    teardown; assert_equal XMLMotorEngine.pre_processed_content(xnodes,xtags,"y", "=\"3\"", false, 'class'), ["\"yada\""]
   end
 end
 

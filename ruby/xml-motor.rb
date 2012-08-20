@@ -35,4 +35,20 @@ module XMLMotor
   def self.xmldata(nodes, tags=nil, tag_to_find=nil, attrib_to_find=nil, with_tag=false)
     XMLMotorEngine.pre_processed_content nodes, tags, tag_to_find, attrib_to_find, with_tag
   end
+
+  def self.xmlattrib(attrib_key, nodes, tags=nil, tag_to_find=nil, attrib_to_find=nil)
+    unless tag_to_find.nil? && attrib_to_find.nil?
+      attribs = XMLMotorEngine.pre_processed_content nodes, tags, tag_to_find, attrib_to_find, false, attrib_key
+    else
+      attribs = XMLMotorEngine.pre_processed_content nodes, tags, tag_to_find, attrib_key, false, attrib_key
+    end
+    attribs = attribs.collect{|attrib|
+      if attrib.match(/^"(.*)"$/).nil?
+        attrib
+      else
+        attrib[1..-2].gsub('\"','"')
+      end
+    }
+    return attribs
+  end
 end

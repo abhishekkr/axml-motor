@@ -59,5 +59,16 @@ class TestXMLMotor < Test::Unit::TestCase
     assert_equal XMLMotor.xmldata(xnodes, xtags, "a.b"), ["2"]
     assert_equal XMLMotor.xmldata(xnodes, xtags, "a.b", nil, true), ["<b>2</b>"]
   end
+
+  def test_xmlattrib
+    content = "<a j=10>1<b i=1>2</b>3<c i=7 j=5>4</c>5</a>"
+    xnodes  = XMLMotor.splitter content
+    xtags   = XMLMotor.indexify xnodes
+    assert_equal XMLMotor.xmlattrib('k', xnodes, xtags), []
+    assert_equal XMLMotor.xmlattrib('i', xnodes, xtags, 'a'), []
+    assert_equal XMLMotor.xmlattrib('j', xnodes, xtags), ["10", "5"]
+    assert_equal XMLMotor.xmlattrib('j', xnodes, xtags, 'a'), ["10"]
+    assert_equal XMLMotor.xmlattrib('i', xnodes, xtags, nil, 'j'), ["7"]
+  end
 end
 

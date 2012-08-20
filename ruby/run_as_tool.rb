@@ -151,6 +151,25 @@ unless ARGV.empty?
     solonode = XMLMotor.get_node_from_content "XML: 'XML <div>parsing <span>is</span> revived</div> now. <split line='short' color='green'/>~=ABK=~<split line='long'/>'", nil, ["line=","='green'"], true
     puts solonode, "Count: #{solonode.count}"
     puts "+"*100
+    xml = "XML: 'XML <div>parsing <span line=1>is</span> revived</div> now. <split line='short' color='green'/>~=ABK=~<split line='long'/>'"
+    xsplit = XMLMotor.splitter xml
+    xtags  = XMLMotor.indexify xsplit
+    puts "#{xml} XMLMotor.xmlattrib 'line', xsplit, xtags, 'split' "
+    puts "\t#{XMLMotor.xmlattrib 'line', xsplit, xtags, 'split'}"
+    puts "+"*100
+    xml = "XML: 'XML <div>parsing <span>is</span> revived</div> now. <split line='short' color='green'/>~=ABK=~<split line='long'/><split line=10/>'"
+    xsplit = XMLMotor.splitter xml
+    xtags  = XMLMotor.indexify xsplit
+    puts "#{xml} XMLMotor.xmlattrib 'line', xsplit, xtags, 'split' "
+    puts "\t#{XMLMotor.xmlattrib 'line', xsplit, xtags, 'split'}"
+    puts "+"*100
+    xml = "XML: 'XML <div>parsing <span line=1>is</span> revived</div> now. <split line='short' color='green'/>~=ABK=~<split line='looo\"\'\"ng'/>'"
+    xsplit = XMLMotor.splitter xml
+    xtags  = XMLMotor.indexify xsplit
+    puts "#{xml} XMLMotor.xmlattrib 'line', xsplit, xtags"
+    puts "\t#{XMLMotor.xmlattrib 'line', xsplit, xtags}"
+    puts "+"*100
+
     exit 0
   end
 end

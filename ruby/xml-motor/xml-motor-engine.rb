@@ -62,7 +62,7 @@ module XMLMotorEngine
       node_start = index_to_find[ncount*2]
       node_stop = index_to_find[ncount*2 +1]
       unless attrib_to_find.nil? or attrib_to_find.empty?
-      	next if @xmlnodes[node_start][0][1].nil?
+        next if @xmlnodes[node_start][0][1].nil?
         check_keyval = attrib_keyval.collect{|keyval| @xmlnodes[node_start][0][1][keyval.first] == keyval.last}.include? false
         check_key = attrib_justkey.collect{|key| @xmlnodes[node_start][0][1][key.first].nil? }.include? true
         check_val = attrib_justval.collect{|val| @xmlnodes[node_start][0][1].each_value.include? val[1] }.include? false
@@ -85,7 +85,35 @@ module XMLMotorEngine
     nodes
   end
 
-  def self.xml_extracter(tag_to_find=nil, attrib_to_find=nil, with_tag=false)
+  def self._grab_my_attrib_ (attrib_key, index_to_find, attrib_to_find=nil)
+    unless attrib_to_find.nil? or attrib_to_find.empty?
+      attrib_keyval = [attrib_to_find].flatten.collect{|keyval| _get_attrib_key_val_ keyval }
+      attrib_justkey = attrib_keyval.select{|attr| attr[1].empty?}
+      attrib_justval = attrib_keyval.select{|attr| attr[0].empty?}
+      attrib_keyval  -= (attrib_justkey + attrib_justval)
+    end
+
+    attribs = []
+    node_count = index_to_find.size/2 - 1
+    0.upto node_count do |ncount|
+      node_start = index_to_find[ncount*2]
+      node_stop = index_to_find[ncount*2 +1]
+      unless attrib_to_find.nil? or attrib_to_find.empty?
+      	next if @xmlnodes[node_start][0][1].nil?
+        check_keyval = attrib_keyval.collect{|keyval| @xmlnodes[node_start][0][1][keyval.first] == keyval.last}.include? false
+        check_key = attrib_justkey.collect{|key| @xmlnodes[node_start][0][1][key.first].nil? }.include? true
+        check_val = attrib_justval.collect{|val| @xmlnodes[node_start][0][1].each_value.include? val[1] }.include? false
+        next if check_keyval or check_key or check_val
+      end
+      unless @xmlnodes[node_start][0][1].nil?
+        attribs[ncount] = @xmlnodes[node_start][0][1][attrib_key] unless @xmlnodes[node_start][0][1][attrib_key].nil?
+      end
+    end
+    attribs.delete(nil) unless attrib_to_find.nil?
+    attribs
+  end
+
+  def self.xml_extracter(tag_to_find=nil, attrib_to_find=nil, with_tag=false, just_attrib_val=nil)
     index_to_find = []
     if attrib_to_find.nil? and tag_to_find.nil?
       return nil
@@ -94,7 +122,11 @@ module XMLMotorEngine
     else
       index_to_find = XMLIndexHandler.get_tag_indexes self, tag_to_find.downcase
     end
-    _grab_my_node_ index_to_find, attrib_to_find, with_tag
+    if just_attrib_val.nil?
+      return _grab_my_node_ index_to_find, attrib_to_find, with_tag
+    else
+      return _grab_my_attrib_ just_attrib_val, index_to_find, attrib_to_find
+    end
   end
 
   def self.xml_miner(xmldata, tag_to_find=nil, attrib_to_find=nil, with_tag=false)
@@ -112,7 +144,7 @@ module XMLMotorEngine
     @xmltags = xml_tags || @xmltags
   end
 
-  def self.pre_processed_content(_nodes, _tags=nil, tag_to_find=nil, attrib_to_find=nil, with_tag=false)
+  def self.pre_processed_content(_nodes, _tags=nil, tag_to_find=nil, attrib_to_find=nil, with_tag=false, just_attrib_val=nil)
     begin
       xmlnodes _nodes
       unless _tags.nil?
@@ -120,7 +152,7 @@ module XMLMotorEngine
       else
         _indexify_
       end
-      return xml_extracter tag_to_find, attrib_to_find, with_tag
+      return xml_extracter tag_to_find, attrib_to_find, with_tag, just_attrib_val
     rescue
       XMLStdout._err "Parsing processed XML Nodes."
     end
