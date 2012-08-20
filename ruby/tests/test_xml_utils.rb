@@ -10,7 +10,7 @@ class TestXMLUtils < Test::Unit::TestCase
     assert_equal XMLUtils.dbqot_string("\'\'"), "\"\""
     assert_equal XMLUtils.dbqot_string("\"\""), "\"\""
     assert_equal XMLUtils.dbqot_string("\'any var\'"), "\"any var\""
-    assert_equal XMLUtils.dbqot_string("\'any\"var\'"), "\"any'var\""
+    assert_equal XMLUtils.dbqot_string("\'any\"var\'"), "\"any\\\"var\""
     assert_equal XMLUtils.dbqot_string("\"any'var\""), "\"any'var\""
   end
 end
